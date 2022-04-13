@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 import crud
@@ -40,7 +40,7 @@ async def read_team(team_id: int, db: Session = Depends(dependencies.get_db)):
     return team
 
 
-@router.post('/teams', response_model=TeamDB)
+@router.post('/teams', status_code=status.HTTP_201_CREATED, response_model=TeamDB)
 async def create_team(user_id: int, team: TeamCreate, db: Session = Depends(dependencies.get_db)):
     new_team = crud.create_team(db=db, user_id=user_id, team=team)
     return new_team
@@ -58,7 +58,7 @@ async def read_driver(driver_id: int, db: Session = Depends(dependencies.get_db)
     return driver
 
 
-@router.post('/drivers', response_model=DriverDB)
+@router.post('/drivers', status_code=status.HTTP_201_CREATED, response_model=DriverDB)
 async def create_driver(driver: DriverCreate, db: Session = Depends(dependencies.get_db)):
     new_driver = crud.create_driver(db=db, driver=driver)
     return new_driver
