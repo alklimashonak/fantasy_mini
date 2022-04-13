@@ -1,12 +1,12 @@
 from typing import Optional, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class DriverBase(BaseModel):
-    first_name: str
-    last_name: str
-    number: int
+    first_name: str = Field(..., max_length=24)
+    last_name: str = Field(..., max_length=24)
+    number: int = Field(..., lt=100)
 
 
 class DriverCreate(DriverBase):
@@ -25,7 +25,7 @@ class DriverDBFull(DriverDB):
 
 
 class TeamBase(BaseModel):
-    name: str
+    name: str = Field(..., max_length=48)
 
 
 class TeamCreate(TeamBase):
@@ -39,26 +39,26 @@ class TeamDB(TeamBase):
         orm_mode = True
 
 
-class TeamDBFull(TeamDB):
-    drivers: List[DriverDB]
-    owner_id: int
-
-
 class UserBase(BaseModel):
-    username: str
+    username: str = Field(..., max_length=24)
 
 
 class UserCreate(UserBase):
-    password: str
+    password: str = Field(..., max_length=24)
 
 
 class UserDB(UserBase):
     id: int
-    email: Optional[str] = None
+    email: Optional[str] = Field(None, max_length=48)
 
     class Config:
         orm_mode = True
 
 
 class UserDBFull(UserDB):
-    teams: List[TeamDB]
+    teams: List[TeamDB] = []
+
+
+class TeamDBFull(TeamDB):
+    drivers: List[DriverDB] = []
+    owner: UserDB
