@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from models import User, Team, Driver
@@ -11,6 +12,8 @@ def get_all_users(db: Session):
 
 def get_user_by_id(db: Session, user_id: int):
     user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No user with this ID')
     return user
 
 
@@ -29,6 +32,8 @@ def get_all_teams(db: Session):
 
 def get_team_by_id(db: Session, team_id: int):
     team = db.query(Team).filter(Team.id == team_id).first()
+    if not team:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No team with this ID')
     return team
 
 
@@ -47,6 +52,8 @@ def get_all_drivers(db: Session):
 
 def get_driver_by_id(db: Session, driver_id: int):
     driver = db.query(Driver).filter(Driver.id == driver_id).first()
+    if not driver:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No driver with this ID')
     return driver
 
 
