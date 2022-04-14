@@ -45,6 +45,15 @@ def create_team(db: Session, user_id: int, team: TeamCreate):
     return new_team
 
 
+def update_team(db: Session, team_id: int, team: TeamCreate):
+    current_team = db.query(Team).filter(Team.id == team_id).first()
+    current_team.name = team.name
+    db.add(current_team)
+    db.commit()
+    db.refresh(current_team)
+    return current_team
+
+
 def get_all_drivers(db: Session):
     drivers = db.query(Driver).all()
     return drivers
@@ -63,3 +72,13 @@ def create_driver(db: Session, driver: DriverCreate):
     db.commit()
     db.refresh(new_driver)
     return new_driver
+
+def update_driver(db: Session, driver_id: int, driver: DriverCreate):
+    current_driver = db.query(Driver).filter(Driver.id == driver_id).first()
+    current_driver.first_name = driver.first_name
+    current_driver.last_name = driver.last_name
+    current_driver.number = driver.number
+    db.add(current_driver)
+    db.commit()
+    db.refresh(current_driver)
+    return current_driver
