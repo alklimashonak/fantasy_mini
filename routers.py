@@ -46,6 +46,12 @@ async def create_team(user_id: int, team: TeamCreate, db: Session = Depends(depe
     return new_team
 
 
+@router.put('/teams/{team_id}', status_code=status.HTTP_200_OK, response_model=TeamDB)
+async def update_team(team_id: int, team: TeamCreate, db: Session = Depends(dependencies.get_db)):
+    updated_team = crud.update_team(db=db, team_id=team_id, team=team)
+    return updated_team
+
+
 @router.get('/drivers', response_model=List[DriverDB])
 async def read_all_drivers(db: Session = Depends(dependencies.get_db)):
     drivers = crud.get_all_drivers(db=db)
@@ -62,3 +68,9 @@ async def read_driver(driver_id: int, db: Session = Depends(dependencies.get_db)
 async def create_driver(driver: DriverCreate, db: Session = Depends(dependencies.get_db)):
     new_driver = crud.create_driver(db=db, driver=driver)
     return new_driver
+
+
+@router.put('/drivers/{driver_id}', status_code=status.HTTP_200_OK, response_model=DriverDB)
+async def update_driver(driver_id: int, driver: DriverCreate, db: Session = Depends(dependencies.get_db)):
+    updated_driver = crud.update_driver(db=db, driver_id=driver_id, driver=driver)
+    return updated_driver
