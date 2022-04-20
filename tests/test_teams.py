@@ -6,10 +6,12 @@ def test_read_all_teams_api_valid(create_two_teams, client):
         {
             'id': 1,
             'name': 'team 1',
+            'owner_id': 1
         },
         {
             'id': 2,
             'name': 'team 2',
+            'owner_id': 1
         },
     ]
 
@@ -21,11 +23,7 @@ def test_read_team_api_valid(create_two_teams, client):
         'id': 2,
         'name': 'team 2',
         'drivers': [],
-        'owner': {
-            'id': 1,
-            'username': 'user',
-            'email': None
-        }
+        'owner_id': 1
     }
 
 

@@ -34,6 +34,7 @@ class TeamCreate(TeamBase):
 
 class TeamDB(TeamBase):
     id: int
+    owner_id: int
 
     class Config:
         orm_mode = True
@@ -61,4 +62,3 @@ class UserDBFull(UserDB):
 
 class TeamDBFull(TeamDB):
     drivers: List[DriverDB] = []
-    owner: UserDB

@@ -16,7 +16,7 @@ async def read_all_users(db: Session = Depends(dependencies.get_db)):
     return users
 
 
-@router.get('/users/{user_id}', response_model=UserDBFull)
+@router.get('/users/{user_id}', response_model=UserDB)
 async def read_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     user = crud.get_user_by_id(db=db, user_id=user_id)
     return user
@@ -58,7 +58,7 @@ async def read_all_drivers(db: Session = Depends(dependencies.get_db)):
     return drivers
 
 
-@router.get('/drivers/{driver_id}', response_model=DriverDBFull)
+@router.get('/drivers/{driver_id}', response_model=DriverDB)
 async def read_driver(driver_id: int, db: Session = Depends(dependencies.get_db)):
     driver = crud.get_driver_by_id(db=db, driver_id=driver_id)
     return driver
