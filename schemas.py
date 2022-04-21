@@ -34,7 +34,7 @@ class TeamCreate(TeamBase):
 
 class TeamDB(TeamBase):
     id: int
-    owner_id: int
+    owner_id: str
 
     class Config:
         orm_mode = True
@@ -42,6 +42,7 @@ class TeamDB(TeamBase):
 
 class UserBase(BaseModel):
     username: str = Field(..., max_length=24)
+    email: Optional[str] = Field(None, max_length=48)
 
 
 class UserCreate(UserBase):
@@ -49,8 +50,8 @@ class UserCreate(UserBase):
 
 
 class UserDB(UserBase):
-    id: int
-    email: Optional[str] = Field(None, max_length=48)
+    id: str
+    hashed_password: str
 
     class Config:
         orm_mode = True

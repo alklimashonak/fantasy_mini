@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import Column, Integer, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
 
@@ -13,10 +15,10 @@ association_table = Table('association', Base.metadata,
 class User(Base):
     __tablename__ = 'user'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True, default=str(uuid.uuid4()))
     username = Column(String(24), nullable=False, index=True)
     email = Column(String(48), nullable=True)
-    password = Column(String(24), nullable=False)
+    hashed_password = Column(String(128), nullable=False)
 
     teams = relationship('Team', back_populates='owner')
 
@@ -38,7 +40,7 @@ class Team(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(48), nullable=False, index=True)
 
-    owner_id = Column(Integer, ForeignKey('user.id'))
+    owner_id = Column(String, ForeignKey('user.id'))
 
     owner = relationship('User', back_populates='teams')
     drivers = relationship('Driver', secondary=association_table, back_populates='teams')

@@ -1,13 +1,16 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 import crud
 import dependencies
-from schemas import UserDB, UserCreate, TeamDB, TeamDBFull, UserDBFull, DriverDB, DriverDBFull, DriverCreate, TeamCreate
+from schemas import UserDB, UserCreate, TeamDB, TeamDBFull, DriverDB, DriverCreate, TeamCreate
 
 router = APIRouter()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.get('/users', response_model=List[UserDB])
@@ -20,6 +23,11 @@ async def read_all_users(db: Session = Depends(dependencies.get_db)):
 async def read_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     user = crud.get_user_by_id(db=db, user_id=user_id)
     return user
+
+
+@router.get('/users/me', response_model=UserDB)
+async def read_current_user(current_user: UserDB = Depends(dependencies.get_current_user)):
+    return current_user
 
 
 @router.post('/users', response_model=UserDB)
@@ -41,9 +49,14 @@ async def read_team(team_id: int, db: Session = Depends(dependencies.get_db)):
 
 
 @router.post('/teams', status_code=status.HTTP_201_CREATED, response_model=TeamDB)
-async def create_team(user_id: int, team: TeamCreate, db: Session = Depends(dependencies.get_db)):
+async def create_team(user_id: str, team: TeamCreate, db: Session = Depends(dependencies.get_db)):
     new_team = crud.create_team(db=db, user_id=user_id, team=team)
     return new_team
+
+
+@router.get('/myteam', response_model=TeamDB)
+async def read_my_team(token: str = Depends(oauth2_scheme)):
+    return {'token': token}
 
 
 @router.put('/teams/{team_id}', status_code=status.HTTP_200_OK, response_model=TeamDB)
