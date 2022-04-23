@@ -21,8 +21,33 @@ def get_user_by_id(db: Session, user_id: int):
     return user
 
 
+def get_user_by_username(db: Session, username: str):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No user with this username')
+    return user
+
+
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def authenticate_user(db: Session, username: str, password: str):
+    user = get_user_by_username(db=db, username=username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+
+def fake_decode_token(db: Session, token: str):
+    user = db.query(User).filter(User.username == token).first()
+    return user
 
 
 def create_user(db: Session, user: UserCreate):
@@ -81,6 +106,7 @@ def create_driver(db: Session, driver: DriverCreate):
     db.commit()
     db.refresh(new_driver)
     return new_driver
+
 
 def update_driver(db: Session, driver_id: int, driver: DriverCreate):
     current_driver = db.query(Driver).filter(Driver.id == driver_id).first()

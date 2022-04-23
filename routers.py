@@ -1,7 +1,7 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 import crud
@@ -10,13 +10,16 @@ from schemas import UserDB, UserCreate, TeamDB, TeamDBFull, DriverDB, DriverCrea
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 
 @router.get('/users', response_model=List[UserDB])
 async def read_all_users(db: Session = Depends(dependencies.get_db)):
     users = crud.get_all_users(db=db)
     return users
+
+
+@router.get('/users/me', response_model=UserDB)
+async def read_current_user(current_user: UserDB = Depends(dependencies.get_current_user)):
+    return current_user
 
 
 @router.get('/users/{user_id}', response_model=UserDB)
@@ -25,15 +28,19 @@ async def read_user(user_id: int, db: Session = Depends(dependencies.get_db)):
     return user
 
 
-@router.get('/users/me', response_model=UserDB)
-async def read_current_user(current_user: UserDB = Depends(dependencies.get_current_user)):
-    return current_user
-
-
 @router.post('/users', response_model=UserDB)
 async def create_user(user: UserCreate, db: Session = Depends(dependencies.get_db)):
     new_user = crud.create_user(db=db, user=user)
     return new_user
+
+
+@router.post("/token")
+async def login(db: Session = Depends(dependencies.get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+    user = crud.get_user_by_username(db=db, username=form_data.username)
+    if not crud.verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    return {"access_token": user.username, "token_type": "bearer"}
 
 
 @router.get('/teams', response_model=List[TeamDB])
@@ -52,11 +59,6 @@ async def read_team(team_id: int, db: Session = Depends(dependencies.get_db)):
 async def create_team(user_id: str, team: TeamCreate, db: Session = Depends(dependencies.get_db)):
     new_team = crud.create_team(db=db, user_id=user_id, team=team)
     return new_team
-
-
-@router.get('/myteam', response_model=TeamDB)
-async def read_my_team(token: str = Depends(oauth2_scheme)):
-    return {'token': token}
 
 
 @router.put('/teams/{team_id}', status_code=status.HTTP_200_OK, response_model=TeamDB)
