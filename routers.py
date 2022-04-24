@@ -37,10 +37,9 @@ async def create_user(user: UserCreate, db: Session = Depends(dependencies.get_d
 
 @router.post("/token")
 async def login(db: Session = Depends(dependencies.get_db), form_data: OAuth2PasswordRequestForm = Depends()):
-    user = crud.get_user_by_username(db=db, username=form_data.username)
-    if not utils.verify_password(form_data.password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
-
+    user = utils.authenticate_user(db=db, username=form_data.username, password=form_data.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Incorrect username or password")
     return {"access_token": user.username, "token_type": "bearer"}
 
 
