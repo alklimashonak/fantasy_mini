@@ -30,14 +30,15 @@ def test_read_driver_api(create_two_drivers, client):
 
 
 def test_create_driver_api(client):
-    response = client.get('/drivers')
+    response = client.get('/drivers/')
     assert response.json() == []
-    client.post('/drivers', json={
+    response = client.post('/drivers/', json={
         'first_name': 'Lando',
         'last_name': 'Norris',
         'number': 5
     })
-    response = client.get('/drivers')
+    assert response.status_code == 201
+    response = client.get('/drivers/')
     assert response.json() == [
         {
             'id': 1,
@@ -49,21 +50,21 @@ def test_create_driver_api(client):
 
 
 def test_create_driver_api_validations_check(client):
-    response = client.post('drivers', json={
+    response = client.post('/drivers/', json={
         'first_name': '1234567890123456789012345',
         'last_name': 'sample',
         'number': 10
     })
     assert response.status_code == 422
 
-    response = client.post('drivers', json={
+    response = client.post('/drivers/', json={
         'first_name': 'sample',
         'last_name': 'sample',
         'number': 100
     })
     assert response.status_code == 422
 
-    response = client.post('drivers', json={
+    response = client.post('/drivers/', json={
         'last_name': 'sample',
         'number': 100
     })

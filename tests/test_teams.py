@@ -1,5 +1,5 @@
 def test_read_all_teams_api_valid(create_two_teams, client):
-    response = client.get('/teams')
+    response = client.get('/teams/')
     assert response.status_code == 200
     assert len(response.json()) == 2
 
@@ -11,11 +11,12 @@ def test_read_team_api_valid(create_two_teams, client):
 
 
 def test_create_team_api(create_two_teams, client):
-    response = client.get('/teams')
+    response = client.get('/teams/')
     assert len(response.json()) == 2
-    client.post('/teams?user_id=1',
-                json={
-                    'name': 'test team'
-                })
-    response = client.get('/teams')
+    response = client.post('/teams/?user_id=1',
+                           json={
+                               'name': 'test team'
+                           })
+    assert response.status_code == 201
+    response = client.get('/teams/')
     assert len(response.json()) == 3

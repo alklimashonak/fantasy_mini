@@ -5,9 +5,9 @@ from sqlalchemy_utils import database_exists, create_database
 from starlette.testclient import TestClient
 
 from schemas import user_schemas, driver_schemas, team_schemas
-from crud import create_driver, create_team, create_user
+from crud import user_crud, driver_crud, team_crud
 from db.database import Base
-from dependencies import get_db
+from api.dependencies import get_db
 from main import app
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test2.db"
@@ -48,16 +48,16 @@ def client(db):
 
 @pytest.fixture
 def create_two_drivers(db):
-    create_driver(db, driver_schemas.DriverCreate(first_name='Lewis',
-                                                  last_name='Hamilton',
-                                                  number=44))
-    create_driver(db, driver_schemas.DriverCreate(first_name='Max',
-                                                  last_name='Verstappen',
-                                                  number='1'))
+    driver_crud.create_driver(db, driver_schemas.DriverCreate(first_name='Lewis',
+                                                              last_name='Hamilton',
+                                                              number=44))
+    driver_crud.create_driver(db, driver_schemas.DriverCreate(first_name='Max',
+                                                              last_name='Verstappen',
+                                                              number='1'))
 
 
 @pytest.fixture
 def create_two_teams(db):
-    user = create_user(db, user_schemas.UserCreate(username='user', password='1234'))
-    create_team(db, user.id, team_schemas.TeamCreate(name='team 1'))
-    create_team(db, user.id, team_schemas.TeamCreate(name='team 2'))
+    user = user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
+    team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 1'))
+    team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 2'))
