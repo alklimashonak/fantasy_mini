@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 import utils
 from models import User, Team, Driver
-from schemas import UserCreate, TeamCreate, DriverCreate
+from schemas import user_schemas, driver_schemas, team_schemas
 
 
 def get_all_users(db: Session):
@@ -25,7 +25,7 @@ def get_user_by_username(db: Session, username: str):
     return user
 
 
-def create_user(db: Session, user: UserCreate):
+def create_user(db: Session, user: user_schemas.UserCreate):
     hashed_password = utils.get_password_hash(user.password)
     new_user = User(**user.dict(exclude={'password'}), hashed_password=hashed_password)
     db.add(new_user)
@@ -46,7 +46,7 @@ def get_team_by_id(db: Session, team_id: int):
     return team
 
 
-def create_team(db: Session, user_id: str, team: TeamCreate):
+def create_team(db: Session, user_id: str, team: team_schemas.TeamCreate):
     new_team = Team(**team.dict(), owner_id=user_id)
     db.add(new_team)
     db.commit()
@@ -54,7 +54,7 @@ def create_team(db: Session, user_id: str, team: TeamCreate):
     return new_team
 
 
-def update_team(db: Session, team_id: int, team: TeamCreate):
+def update_team(db: Session, team_id: int, team: team_schemas.TeamCreate):
     current_team = db.query(Team).filter(Team.id == team_id).first()
     current_team.name = team.name
     db.add(current_team)
@@ -75,7 +75,7 @@ def get_driver_by_id(db: Session, driver_id: int):
     return driver
 
 
-def create_driver(db: Session, driver: DriverCreate):
+def create_driver(db: Session, driver: driver_schemas.DriverCreate):
     new_driver = Driver(**driver.dict())
     db.add(new_driver)
     db.commit()
@@ -83,7 +83,7 @@ def create_driver(db: Session, driver: DriverCreate):
     return new_driver
 
 
-def update_driver(db: Session, driver_id: int, driver: DriverCreate):
+def update_driver(db: Session, driver_id: int, driver: driver_schemas.DriverCreate):
     current_driver = db.query(Driver).filter(Driver.id == driver_id).first()
     current_driver.first_name = driver.first_name
     current_driver.last_name = driver.last_name
