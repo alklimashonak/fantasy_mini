@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 import crud
 import dependencies
 from schemas import UserDB, UserCreate, TeamDB, TeamDBFull, DriverDB, DriverCreate, TeamCreate
+import utils
 
 router = APIRouter()
 
@@ -37,7 +38,7 @@ async def create_user(user: UserCreate, db: Session = Depends(dependencies.get_d
 @router.post("/token")
 async def login(db: Session = Depends(dependencies.get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     user = crud.get_user_by_username(db=db, username=form_data.username)
-    if not crud.verify_password(form_data.password, user.hashed_password):
+    if not utils.verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
     return {"access_token": user.username, "token_type": "bearer"}
