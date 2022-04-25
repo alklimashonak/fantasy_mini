@@ -57,7 +57,7 @@ def create_two_drivers(db):
 
 
 @pytest.fixture
-def create_two_teams(db):
+def create_two_teams_and_user(db):
     user = user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
     team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 1'))
     team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 2'))

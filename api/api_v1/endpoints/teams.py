@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from crud import team_crud
 from api import dependencies
-from schemas import team_schemas
+from schemas import team_schemas, user_schemas
 
 
 router = APIRouter()
@@ -17,6 +17,11 @@ async def read_all_teams(db: Session = Depends(dependencies.get_db)):
     return teams
 
 
+@router.get('/my-teams', response_model=List[team_schemas.TeamDB])
+async def read_teams_of_current_user(current_user: user_schemas.UserDBFull = Depends(dependencies.get_current_user)):
+    return current_user.teams
+
+
 @router.get('/{team_id}', response_model=team_schemas.TeamDBFull)
 async def read_team(team_id: int, db: Session = Depends(dependencies.get_db)):
     team = team_crud.get_team_by_id(db=db, team_id=team_id)
@@ -24,8 +29,10 @@ async def read_team(team_id: int, db: Session = Depends(dependencies.get_db)):
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED, response_model=team_schemas.TeamDB)
-async def create_team(user_id: str, team: team_schemas.TeamCreate, db: Session = Depends(dependencies.get_db)):
-    new_team = team_crud.create_team(db=db, user_id=user_id, team=team)
+async def create_team(team: team_schemas.TeamCreate,
+                      current_user: user_schemas.UserDBFull = Depends(dependencies.get_current_user),
+                      db: Session = Depends(dependencies.get_db)):
+    new_team = team_crud.create_team(db=db, user_id=current_user.id, team=team)
     return new_team
 
 

@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-import crud
+from crud import user_crud
 from models import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -16,7 +16,7 @@ def verify_password(plain_password, hashed_password):
 
 
 def authenticate_user(db: Session, username: str, password: str):
-    user = crud.get_user_by_username(db=db, username=username)
+    user = user_crud.get_user_by_username(db=db, username=username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
