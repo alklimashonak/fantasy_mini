@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Boolean
 from sqlalchemy.orm import relationship
 
 from db.database import Base
@@ -19,6 +19,8 @@ class User(Base):
     username = Column(String(24), nullable=False, index=True)
     email = Column(String(48), nullable=True)
     hashed_password = Column(String(128), nullable=False)
+    is_superuser = Column(Boolean, default=False)
+    is_moderator = Column(Boolean, default=False)
 
     teams = relationship('Team', back_populates='owner')
 

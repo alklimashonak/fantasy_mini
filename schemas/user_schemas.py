@@ -17,6 +17,8 @@ class UserCreate(UserBase):
 class UserDB(UserBase):
     id: str
     hashed_password: str
+    is_superuser: bool
+    is_moderator: bool
 
     class Config:
         orm_mode = True

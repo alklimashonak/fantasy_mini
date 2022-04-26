@@ -32,3 +32,9 @@ async def read_user(user_id: int, db: Session = Depends(dependencies.get_db)):
 async def create_user(user: user_schemas.UserCreate, db: Session = Depends(dependencies.get_db)):
     new_user = user_crud.create_user(db=db, user=user)
     return new_user
+
+
+@router.post('/admin', response_model=user_schemas.UserDB)
+async def create_superuser(user: user_schemas.UserCreate, db: Session = Depends(dependencies.get_db)):
+    new_user = user_crud.create_user(db=db, user=user, is_admin=True)
+    return new_user

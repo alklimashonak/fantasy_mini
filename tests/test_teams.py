@@ -10,14 +10,10 @@ def test_read_team_api_valid(create_two_teams_and_user, client):
     assert response.json().get('id') == 2
 
 
-def test_create_team_api(create_two_teams_and_user, client):
+def test_create_team_api_by_logged_user_works(create_two_teams_and_user, client):
     response = client.get('/teams/')
     assert len(response.json()) == 2
-    response = client.post('/teams/',
-                           json={
-                               'name': 'test team'
-                           })
-    assert response.status_code == 401
+
     headers = {'Content-Type': 'application/json',
                'Authorization': 'Bearer user'}
 
@@ -28,3 +24,13 @@ def test_create_team_api(create_two_teams_and_user, client):
 
     response = client.get('/teams/')
     assert len(response.json()) == 3
+
+
+def test_create_team_api_by_not_logged_user_doesnt_work(create_two_teams_and_user, client):
+    response = client.get('/teams/')
+    assert len(response.json()) == 2
+    response = client.post('/teams/',
+                           json={
+                               'name': 'test team'
+                           })
+    assert response.status_code == 401

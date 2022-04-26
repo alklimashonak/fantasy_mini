@@ -61,3 +61,8 @@ def create_two_teams_and_user(db):
     user = user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
     team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 1'))
     team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 2'))
+
+
+@pytest.fixture
+def create_superuser(db):
+    user_crud.create_user(db, user_schemas.UserCreate(username='admin', password='1234'), is_admin=True)
