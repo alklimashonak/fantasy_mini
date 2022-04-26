@@ -7,7 +7,6 @@ from crud import team_crud
 from api import dependencies
 from schemas import team_schemas, user_schemas
 
-
 router = APIRouter()
 
 
@@ -37,11 +36,25 @@ async def create_team(team: team_schemas.TeamCreate,
 
 
 @router.put('/{team_id}', status_code=status.HTTP_200_OK, response_model=team_schemas.TeamDB)
-async def update_team(team_id: int,
-                      team: team_schemas.TeamCreate,
-                      current_user: user_schemas.UserDBFull = Depends(dependencies.get_current_user),
-                      db: Session = Depends(dependencies.get_db)):
+async def update_team(
+        team_id: int,
+        team: team_schemas.TeamCreate,
+        current_user: user_schemas.UserDBFull = Depends(dependencies.get_current_user),
+        db: Session = Depends(dependencies.get_db)
+):
     if team_id not in [user_team.id for user_team in current_user.teams]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You can update only your own team')
     updated_team = team_crud.update_team(db=db, team_id=team_id, team=team)
     return updated_team
+
+
+@router.delete('/{team_id}', status_code=status.HTTP_200_OK, response_model=team_schemas.TeamDB)
+async def delete_team(
+        team_id: int,
+        current_user: user_schemas.UserDBFull = Depends(dependencies.get_current_user),
+        db: Session = Depends(dependencies.get_db)
+):
+    if team_id not in [user_team.id for user_team in current_user.teams]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You can delete only your own team')
+    deleted_team = team_crud.delete_team(db=db, team_id=team_id)
+    return deleted_team
