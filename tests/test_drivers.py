@@ -108,3 +108,18 @@ def test_admin_can_update_driver(create_two_drivers, create_superuser, client):
                           },
                           headers=headers)
     assert response.status_code == 200
+
+
+def test_admin_can_delete_driver(create_two_drivers, create_superuser, client):
+    admin_headers = {'Authorization': 'Bearer admin',
+                     'Content-Type': 'application/json'}
+
+    response = client.delete('/drivers/1', headers=admin_headers)
+    assert response.status_code == 200
+
+
+def test_not_admin_cant_delete_driver(create_two_drivers, create_two_teams_and_user, client):
+    user_headers = {'Authorization': 'Bearer user',
+                    'Content-Type': 'application/json'}
+    response = client.delete('/drivers/1', headers=user_headers)
+    assert response.status_code == 403
