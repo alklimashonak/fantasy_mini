@@ -34,3 +34,10 @@ def update_driver(db: Session, driver_id: int, driver: driver_schemas.DriverCrea
     db.commit()
     db.refresh(current_driver)
     return current_driver
+
+
+def delete_driver(db: Session, driver_id: int):
+    driver = db.query(Driver).filter(Driver.id == driver_id).first()
+    db.delete(driver)
+    db.commit()
+    return driver

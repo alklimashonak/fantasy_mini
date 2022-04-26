@@ -45,3 +45,15 @@ async def update_driver(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Only moderator can update driver')
     updated_driver = driver_crud.update_driver(db=db, driver_id=driver_id, driver=driver)
     return updated_driver
+
+
+@router.delete('/{driver_id}', status_code=status.HTTP_200_OK, response_model=driver_schemas.DriverDB)
+async def delete_driver(
+        driver_id: int,
+        current_user: user_schemas.UserDB = Depends(dependencies.get_current_user),
+        db: Session = Depends(dependencies.get_db)
+):
+    if not current_user.is_moderator:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Only moderator can delete driver')
+    deleted_driver = driver_crud.delete_driver(db=db, driver_id=driver_id)
+    return deleted_driver
