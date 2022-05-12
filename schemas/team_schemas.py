@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
-from .driver_schemas import DriverDB
+from .driver_schemas import Driver
 
 
 class TeamBase(BaseModel):
@@ -13,13 +13,10 @@ class TeamCreate(TeamBase):
     pass
 
 
-class TeamDB(TeamBase):
+class Team(TeamBase):
     id: int
     owner_id: str
+    drivers: List[Driver] = []
 
     class Config:
         orm_mode = True
-
-
-class TeamDBFull(TeamDB):
-    drivers: List[DriverDB] = []

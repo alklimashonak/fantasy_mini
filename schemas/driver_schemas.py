@@ -11,12 +11,8 @@ class DriverCreate(DriverBase):
     pass
 
 
-class DriverDB(DriverBase):
+class Driver(DriverBase):
     id: int
 
     class Config:
         orm_mode = True
-
-
-class DriverDBFull(DriverDB):
-    pass
