@@ -16,10 +16,13 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: str
-    hashed_password: str
     is_superuser: bool
     is_moderator: bool
     teams: List[Team] = []
 
     class Config:
         orm_mode = True
+
+
+class UserDB(User):
+    hashed_password: str
