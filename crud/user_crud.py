@@ -1,4 +1,5 @@
 from typing import Optional
+import uuid
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
@@ -29,7 +30,7 @@ def get_user_by_username(db: Session, username: str):
 
 def create_user(db: Session, user: user_schemas.UserCreate, is_admin: Optional[bool] = None):
     hashed_password = utils.get_password_hash(user.password)
-    new_user = User(**user.dict(exclude={'password'}), hashed_password=hashed_password)
+    new_user = User(**user.dict(exclude={'password'}), hashed_password=hashed_password, id=str(uuid.uuid4()))
     if is_admin:
         new_user.is_superuser = True
         new_user.is_moderator = True

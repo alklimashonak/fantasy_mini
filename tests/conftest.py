@@ -66,3 +66,10 @@ def create_two_teams_and_user(db):
 @pytest.fixture
 def create_superuser(db):
     user_crud.create_user(db, user_schemas.UserCreate(username='admin', password='1234'), is_admin=True)
+
+
+@pytest.fixture
+def create_superuser_and_user(db, create_superuser):
+    print('start to create user')
+    user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
+    print('user is created')

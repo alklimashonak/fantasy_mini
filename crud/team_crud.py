@@ -34,7 +34,7 @@ def update_team(db: Session, team_id: int, team: team_schemas.TeamCreate):
     return current_team
 
 
-def delete_team(db:Session, team_id: int):
+def delete_team(db: Session, team_id: int):
     team = db.query(Team).filter(Team.id == team_id).first()
     db.delete(team)
     db.commit()
