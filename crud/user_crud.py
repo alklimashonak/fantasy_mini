@@ -4,7 +4,7 @@ import uuid
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
-import utils
+from core.security import get_password_hash, verify_password
 from models import User
 from schemas import user_schemas
 
@@ -29,7 +29,7 @@ def get_user_by_username(db: Session, username: str):
 
 
 def create_user(db: Session, user: user_schemas.UserCreate, is_admin: Optional[bool] = None):
-    hashed_password = utils.get_password_hash(user.password)
+    hashed_password = get_password_hash(user.password)
     new_user = User(**user.dict(exclude={'password'}), hashed_password=hashed_password, id=str(uuid.uuid4()))
     if is_admin:
         new_user.is_superuser = True
@@ -38,3 +38,12 @@ def create_user(db: Session, user: user_schemas.UserCreate, is_admin: Optional[b
     db.commit()
     db.refresh(new_user)
     return new_user
+
+
+def authenticate_user(db: Session, username: str, password: str):
+    user = get_user_by_username(db=db, username=username)
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
