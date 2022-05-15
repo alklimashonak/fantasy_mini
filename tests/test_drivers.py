@@ -33,7 +33,10 @@ class TestReadDriverAPI:
 
 class TestCreateDriverAPI:
     def test_admin_can_create_driver(self, create_superuser, client):
-        headers = {'Authorization': 'Bearer admin',
+        payload = {'username': 'admin', 'password': '1234'}
+        response = client.post('/token', data=payload)
+        token_data = response.json()
+        headers = {'Authorization': f'Bearer {token_data.get("access_token")}',
                    'Content-Type': 'application/json'}
         response = client.get('/drivers/')
         assert response.json() == []
@@ -56,7 +59,10 @@ class TestCreateDriverAPI:
         ]
 
     def test_create_driver_api_validations_check(self, create_superuser, client):
-        headers = {'Authorization': 'Bearer admin',
+        payload = {'username': 'admin', 'password': '1234'}
+        response = client.post('/token', data=payload)
+        token_data = response.json()
+        headers = {'Authorization': f'Bearer {token_data.get("access_token")}',
                    'Content-Type': 'application/json'}
         response = client.post('/drivers/',
                                json={
@@ -85,7 +91,10 @@ class TestCreateDriverAPI:
         assert response.status_code == 422
 
     def test_not_admin_user_cant_create_new_driver(self, create_two_teams_and_user, client):
-        headers = {'Authorization': 'Bearer user',
+        payload = {'username': 'user', 'password': '1234'}
+        response = client.post('/token', data=payload)
+        token_data = response.json()
+        headers = {'Authorization': f'Bearer {token_data.get("access_token")}',
                    'Content-Type': 'application/json'}
         response = client.post('/drivers/',
                                json={
@@ -100,7 +109,10 @@ class TestCreateDriverAPI:
 
 class TestUpdateDriverAPI:
     def test_admin_can_update_driver(self, create_two_drivers, create_superuser, client):
-        headers = {'Authorization': 'Bearer admin',
+        payload = {'username': 'admin', 'password': '1234'}
+        response = client.post('/token', data=payload)
+        token_data = response.json()
+        headers = {'Authorization': f'Bearer {token_data.get("access_token")}',
                    'Content-Type': 'application/json'}
         response = client.put('/drivers/1',
                               json={
@@ -118,11 +130,17 @@ class TestDeleteDriverAPI:
                                           create_superuser,
                                           create_user,
                                           client):
-        admin_headers = {'Authorization': 'Bearer admin',
-                         'Content-Type': 'application/json'}
+        admin_payload = {'username': 'admin', 'password': '1234'}
+        response = client.post('/token', data=admin_payload)
+        admin_token_data = response.json()
+        admin_headers = {'Authorization': f'Bearer {admin_token_data.get("access_token")}',
+                   'Content-Type': 'application/json'}
 
-        user_headers = {'Authorization': 'Bearer user',
-                        'Content-Type': 'application/json'}
+        user_payload = {'username': 'user', 'password': '1234'}
+        response = client.post('/token', data=user_payload)
+        user_token_data = response.json()
+        user_headers = {'Authorization': f'Bearer {user_token_data.get("access_token")}',
+                   'Content-Type': 'application/json'}
 
         response = client.delete('/drivers/1', headers=user_headers)
         assert response.status_code == 403

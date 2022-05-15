@@ -17,8 +17,11 @@ class TestCreateTeamAPI:
         response = client.get('/teams/')
         assert len(response.json()) == 2
 
-        headers = {'Content-Type': 'application/json',
-                   'Authorization': 'Bearer user'}
+        payload = {'username': 'user', 'password': '1234'}
+        response = client.post('/token', data=payload)
+        token_data = response.json()
+        headers = {'Authorization': f'Bearer {token_data.get("access_token")}',
+                   'Content-Type': 'application/json'}
 
         response = client.post('/teams/',
                                json={'name': 'test team'},
