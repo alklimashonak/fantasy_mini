@@ -69,7 +69,5 @@ def create_superuser(db):
 
 
 @pytest.fixture
-def create_superuser_and_user(db, create_superuser):
-    print('start to create user')
+def create_user(db):
     user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
-    print('user is created')

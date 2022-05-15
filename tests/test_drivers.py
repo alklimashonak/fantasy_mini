@@ -115,7 +115,8 @@ class TestUpdateDriverAPI:
 class TestDeleteDriverAPI:
     def test_only_admin_can_delete_driver(self,
                                           create_two_drivers,
-                                          create_superuser_and_user,
+                                          create_superuser,
+                                          create_user,
                                           client):
         admin_headers = {'Authorization': 'Bearer admin',
                          'Content-Type': 'application/json'}
