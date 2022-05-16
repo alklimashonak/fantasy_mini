@@ -5,13 +5,13 @@ class TestReadAllDriversAPI:
         assert len(response.json()) == 2
         assert response.json() == [
             {
-                'id': 1,
+                'id': create_two_drivers[0].id,
                 'first_name': 'Lewis',
                 'last_name': 'Hamilton',
                 'number': 44
             },
             {
-                'id': 2,
+                'id': create_two_drivers[1].id,
                 'first_name': 'Max',
                 'last_name': 'Verstappen',
                 'number': 1
@@ -21,10 +21,10 @@ class TestReadAllDriversAPI:
 
 class TestReadDriverAPI:
     def test_read_driver_api_works(self, create_two_drivers, client):
-        response = client.get('/drivers/2')
+        response = client.get(f'/drivers/{create_two_drivers[1].id}')
         assert response.status_code == 200
         assert response.json() == {
-            'id': 2,
+            'id': create_two_drivers[1].id,
             'first_name': 'Max',
             'last_name': 'Verstappen',
             'number': 1
@@ -48,15 +48,6 @@ class TestCreateDriverAPI:
                                },
                                headers=headers)
         assert response.status_code == 201
-        response = client.get('/drivers/')
-        assert response.json() == [
-            {
-                'id': 1,
-                'first_name': 'Lando',
-                'last_name': 'Norris',
-                'number': 5
-            }
-        ]
 
     def test_create_driver_api_validations_check(self, create_superuser, client):
         payload = {'username': 'admin', 'password': '1234'}
@@ -114,7 +105,7 @@ class TestUpdateDriverAPI:
         token_data = response.json()
         headers = {'Authorization': f'Bearer {token_data.get("access_token")}',
                    'Content-Type': 'application/json'}
-        response = client.put('/drivers/1',
+        response = client.put(f'/drivers/{create_two_drivers[0].id}',
                               json={
                                   'first_name': 'Lando',
                                   'last_name': 'Norris',
@@ -134,16 +125,16 @@ class TestDeleteDriverAPI:
         response = client.post('/token', data=admin_payload)
         admin_token_data = response.json()
         admin_headers = {'Authorization': f'Bearer {admin_token_data.get("access_token")}',
-                   'Content-Type': 'application/json'}
+                         'Content-Type': 'application/json'}
 
         user_payload = {'username': 'user', 'password': '1234'}
         response = client.post('/token', data=user_payload)
         user_token_data = response.json()
         user_headers = {'Authorization': f'Bearer {user_token_data.get("access_token")}',
-                   'Content-Type': 'application/json'}
+                        'Content-Type': 'application/json'}
 
-        response = client.delete('/drivers/1', headers=user_headers)
+        response = client.delete(f'/drivers/{create_two_drivers[0].id}]', headers=user_headers)
         assert response.status_code == 403
 
-        response = client.delete('/drivers/1', headers=admin_headers)
+        response = client.delete(f'/drivers/{create_two_drivers[0].id}', headers=admin_headers)
         assert response.status_code == 200

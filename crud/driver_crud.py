@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -10,7 +12,7 @@ def get_all_drivers(db: Session):
     return drivers
 
 
-def get_driver_by_id(db: Session, driver_id: int):
+def get_driver_by_id(db: Session, driver_id: str):
     driver = db.query(Driver).filter(Driver.id == driver_id).first()
     if not driver:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No driver with this ID')
@@ -18,14 +20,14 @@ def get_driver_by_id(db: Session, driver_id: int):
 
 
 def create_driver(db: Session, driver: driver_schemas.DriverCreate):
-    new_driver = Driver(**driver.dict())
+    new_driver = Driver(**driver.dict(), id=str(uuid.uuid4()))
     db.add(new_driver)
     db.commit()
     db.refresh(new_driver)
     return new_driver
 
 
-def update_driver(db: Session, driver_id: int, driver: driver_schemas.DriverCreate):
+def update_driver(db: Session, driver_id: str, driver: driver_schemas.DriverCreate):
     current_driver = db.query(Driver).filter(Driver.id == driver_id).first()
     current_driver.first_name = driver.first_name
     current_driver.last_name = driver.last_name
@@ -36,7 +38,7 @@ def update_driver(db: Session, driver_id: int, driver: driver_schemas.DriverCrea
     return current_driver
 
 
-def delete_driver(db: Session, driver_id: int):
+def delete_driver(db: Session, driver_id: str):
     driver = db.query(Driver).filter(Driver.id == driver_id).first()
     db.delete(driver)
     db.commit()

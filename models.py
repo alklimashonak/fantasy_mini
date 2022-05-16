@@ -28,7 +28,7 @@ class User(Base):
 class Driver(Base):
     __tablename__ = 'driver'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True, default=str(uuid.uuid4()))
     first_name = Column(String(24), nullable=False, index=True)
     last_name = Column(String(24), nullable=False, index=True)
     number = Column(Integer, nullable=False)

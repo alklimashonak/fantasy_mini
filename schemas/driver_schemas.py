@@ -12,7 +12,7 @@ class DriverCreate(DriverBase):
 
 
 class Driver(DriverBase):
-    id: int
+    id: str
 
     class Config:
         orm_mode = True

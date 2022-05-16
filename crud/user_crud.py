@@ -14,7 +14,7 @@ def get_all_users(db: Session):
     return users
 
 
-def get_user_by_id(db: Session, user_id: int):
+def get_user_by_id(db: Session, user_id: str):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No user with this ID')
