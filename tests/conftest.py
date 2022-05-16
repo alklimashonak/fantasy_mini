@@ -48,26 +48,31 @@ def client(db):
 
 @pytest.fixture
 def create_two_drivers(db):
-    driver_crud.create_driver(db, driver_schemas.DriverCreate(first_name='Lewis',
-                                                              last_name='Hamilton',
-                                                              number=44))
-    driver_crud.create_driver(db, driver_schemas.DriverCreate(first_name='Max',
-                                                              last_name='Verstappen',
-                                                              number='1'))
+    driver1 = driver_crud.create_driver(db, driver_schemas.DriverCreate(first_name='Lewis',
+                                                                        last_name='Hamilton',
+                                                                        number=44))
+    driver2 = driver_crud.create_driver(db, driver_schemas.DriverCreate(first_name='Max',
+                                                                        last_name='Verstappen',
+                                                                        number='1'))
+    return [driver1, driver2]
 
 
 @pytest.fixture
-def create_two_teams_and_user(db):
+def create_two_teams_and_user(db, client):
     user = user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
-    team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 1'))
-    team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 2'))
+    team1 = team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 1'))
+    team2 = team_crud.create_team(db, user.id, team_schemas.TeamCreate(name='team 2'))
+
+    return [user, team1, team2]
 
 
 @pytest.fixture
 def create_superuser(db):
-    user_crud.create_user(db, user_schemas.UserCreate(username='admin', password='1234'), is_admin=True)
+    admin = user_crud.create_user(db, user_schemas.UserCreate(username='admin', password='1234'), is_admin=True)
+    return admin
 
 
 @pytest.fixture
 def create_user(db):
-    user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
+    user = user_crud.create_user(db, user_schemas.UserCreate(username='user', password='1234'))
+    return user
