@@ -14,7 +14,7 @@ class TeamCreate(TeamBase):
 
 
 class Team(TeamBase):
-    id: int
+    id: str
     owner_id: str
     drivers: List[Driver] = []
 

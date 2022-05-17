@@ -7,9 +7,9 @@ class TestReadAllTeamsAPI:
 
 class TestReadTeamAPI:
     def test_read_team_api_works_correctly(self, create_two_teams_and_user, client):
-        response = client.get('/teams/2')
+        response = client.get(f'/teams/{create_two_teams_and_user[2].id}')
         assert response.status_code == 200
-        assert response.json().get('id') == 2
+        assert response.json().get('id') == create_two_teams_and_user[2].id
 
 
 class TestCreateTeamAPI:
@@ -66,7 +66,7 @@ class TestUpdateTeamAPI:
                         'Content-Type': 'application/json'}
 
         admin_response = client.put(
-            '/teams/1',
+            f'/teams/{create_two_teams_and_user[1].id}',
             json={'name': 'some name'},
             headers=admin_headers
         )
@@ -74,13 +74,13 @@ class TestUpdateTeamAPI:
         assert admin_response.json() == {'detail': 'You can update only your own team'}
 
         user_response = client.put(
-            '/teams/1',
+            f'/teams/{create_two_teams_and_user[1].id}',
             json={'name': 'some name'},
             headers=user_headers
         )
         assert user_response.status_code == 200
         assert user_response.json() == {
-            'id': 1,
+            'id': create_two_teams_and_user[1].id,
             'name': 'some name',
             'owner_id': create_two_teams_and_user[0].id,
             'drivers': []
@@ -89,7 +89,7 @@ class TestUpdateTeamAPI:
 
 class TestDeleteTeamAPI:
     def test_delete_team_api_by_not_logged_user_doesnt_work(self, create_two_teams_and_user, client):
-        response = client.delete('/teams/1')
+        response = client.delete(f'/teams/{create_two_teams_and_user[1].id}')
         assert response.status_code == 401
         assert response.json() == {'detail': 'Not authenticated'}
 
@@ -116,12 +116,12 @@ class TestDeleteTeamAPI:
         assert admin_response.json() == {'detail': 'You can delete only your own team'}
 
         user_response = client.delete(
-            '/teams/1',
+            f'/teams/{create_two_teams_and_user[1].id}',
             headers=user_headers
         )
         assert user_response.status_code == 200
         assert user_response.json() == {
-            'id': 1,
+            'id': create_two_teams_and_user[1].id,
             'name': 'team 1',
             'owner_id': create_two_teams_and_user[0].id,
             'drivers': []

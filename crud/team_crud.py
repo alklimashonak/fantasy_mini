@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -10,7 +12,7 @@ def get_all_teams(db: Session):
     return teams
 
 
-def get_team_by_id(db: Session, team_id: int):
+def get_team_by_id(db: Session, team_id: str):
     team = db.query(Team).filter(Team.id == team_id).first()
     if not team:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No team with this ID')
@@ -18,14 +20,14 @@ def get_team_by_id(db: Session, team_id: int):
 
 
 def create_team(db: Session, user_id: str, team: team_schemas.TeamCreate):
-    new_team = Team(**team.dict(), owner_id=user_id)
+    new_team = Team(**team.dict(), owner_id=user_id, id=str(uuid.uuid4()))
     db.add(new_team)
     db.commit()
     db.refresh(new_team)
     return new_team
 
 
-def update_team(db: Session, team_id: int, team: team_schemas.TeamCreate):
+def update_team(db: Session, team_id: str, team: team_schemas.TeamCreate):
     current_team = db.query(Team).filter(Team.id == team_id).first()
     current_team.name = team.name
     db.add(current_team)
@@ -34,7 +36,7 @@ def update_team(db: Session, team_id: int, team: team_schemas.TeamCreate):
     return current_team
 
 
-def delete_team(db: Session, team_id: int):
+def delete_team(db: Session, team_id: str):
     team = db.query(Team).filter(Team.id == team_id).first()
     db.delete(team)
     db.commit()

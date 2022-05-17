@@ -23,7 +23,7 @@ async def read_current_user(current_user: user_schemas.User = Depends(dependenci
 
 
 @router.get('/{user_id}', response_model=user_schemas.User)
-async def read_user(user_id: int, db: Session = Depends(dependencies.get_db)):
+async def read_user(user_id: str, db: Session = Depends(dependencies.get_db)):
     user = user_crud.get_user_by_id(db=db, user_id=user_id)
     return user
 

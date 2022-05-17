@@ -39,7 +39,7 @@ class Driver(Base):
 class Team(Base):
     __tablename__ = 'team'
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(String, primary_key=True, index=True, default=uuid.uuid4())
     name = Column(String(48), nullable=False, index=True)
 
     owner_id = Column(String, ForeignKey('user.id'))

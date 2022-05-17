@@ -22,7 +22,7 @@ async def read_teams_of_current_user(current_user: user_schemas.User = Depends(d
 
 
 @router.get('/{team_id}', response_model=team_schemas.Team)
-async def read_team(team_id: int, db: Session = Depends(dependencies.get_db)):
+async def read_team(team_id: str, db: Session = Depends(dependencies.get_db)):
     team = team_crud.get_team_by_id(db=db, team_id=team_id)
     return team
 
@@ -37,7 +37,7 @@ async def create_team(team: team_schemas.TeamCreate,
 
 @router.put('/{team_id}', status_code=status.HTTP_200_OK, response_model=team_schemas.Team)
 async def update_team(
-        team_id: int,
+        team_id: str,
         team: team_schemas.TeamCreate,
         current_user: user_schemas.User = Depends(dependencies.get_current_user),
         db: Session = Depends(dependencies.get_db)
@@ -50,7 +50,7 @@ async def update_team(
 
 @router.delete('/{team_id}', status_code=status.HTTP_200_OK, response_model=team_schemas.Team)
 async def delete_team(
-        team_id: int,
+        team_id: str,
         current_user: user_schemas.User = Depends(dependencies.get_current_user),
         db: Session = Depends(dependencies.get_db)
 ):
