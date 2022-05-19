@@ -7,19 +7,19 @@ from models import Driver
 from schemas import driver_schemas
 
 
-def get_all_drivers(db: Session):
+async def get_all_drivers(db: Session):
     drivers = db.query(Driver).all()
     return drivers
 
 
-def get_driver_by_id(db: Session, driver_id: str):
+async def get_driver_by_id(db: Session, driver_id: str):
     driver = db.query(Driver).filter(Driver.id == driver_id).first()
     if not driver:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='No driver with this ID')
     return driver
 
 
-def create_driver(db: Session, driver: driver_schemas.DriverCreate):
+async def create_driver(db: Session, driver: driver_schemas.DriverCreate):
     new_driver = Driver(**driver.dict(), id=str(uuid.uuid4()))
     db.add(new_driver)
     db.commit()
@@ -27,7 +27,7 @@ def create_driver(db: Session, driver: driver_schemas.DriverCreate):
     return new_driver
 
 
-def update_driver(db: Session, driver_id: str, driver: driver_schemas.DriverCreate):
+async def update_driver(db: Session, driver_id: str, driver: driver_schemas.DriverCreate):
     current_driver = db.query(Driver).filter(Driver.id == driver_id).first()
     current_driver.first_name = driver.first_name
     current_driver.last_name = driver.last_name
@@ -38,7 +38,7 @@ def update_driver(db: Session, driver_id: str, driver: driver_schemas.DriverCrea
     return current_driver
 
 
-def delete_driver(db: Session, driver_id: str):
+async def delete_driver(db: Session, driver_id: str):
     driver = db.query(Driver).filter(Driver.id == driver_id).first()
     db.delete(driver)
     db.commit()
